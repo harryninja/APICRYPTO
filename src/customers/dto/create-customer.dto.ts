@@ -1,22 +1,23 @@
 import {
-  MaxLength,
   IsNotEmpty,
-  IsEmail,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateCustomerDto {
-
   @IsString()
   @IsNotEmpty()
-  readonly address: string;
+  clientId: string;
 
   @IsString()
-  @IsEmail()
-  @IsNotEmpty()
-  readonly privateKey: string;
+  @IsOptional()
+  address: string;
 
   @IsString()
-  @IsNotEmpty()
-  readonly id: string;
+  @IsOptional()
+  privateKey: string;
+
+  @IsString()
+  @IsOptional()
+  balance: string;
 }

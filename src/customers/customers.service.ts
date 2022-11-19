@@ -2,31 +2,32 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ICustomer } from './interfaces/customer.interface';
-import { CreateCustomerDto } from './dto';
+import { CheckCustomerDto } from './dto';
 import { Customer } from './schemas/customer.schema';
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectModel(Customer.name) private readonly customerModel: Model<Customer>,
-  ) {}
+  ) { }
 
-  public async findOne(customerId: string): Promise<Customer> {
+  public async findOne(clientId: string): Promise<Customer> {
     const customer = await this.customerModel
-      .findById({ _id: customerId })
+      .findOne({ where: { clientId: clientId } })
       .exec();
 
     if (!customer) {
-      throw new NotFoundException(`Customer #${customerId} not found`);
+      throw new NotFoundException(`Customer #${clientId} not found`);
     }
 
     return customer;
   }
 
   public async create(
-    createCustomerDto: CreateCustomerDto,
+    createCustomerDto: CheckCustomerDto,
   ): Promise<ICustomer> {
     const newCustomer = await this.customerModel.create(createCustomerDto);
     return newCustomer;
   }
+
 }

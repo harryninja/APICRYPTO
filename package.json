@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^9.0.3",
     "@nestjs/swagger": "^6.0.4",
     "@types/web3": "^1.2.2",
+    "body-parser": "^1.20.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "mongoose": "^6.4.4",

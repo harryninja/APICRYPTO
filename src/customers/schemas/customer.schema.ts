@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 @Schema()
 export class Customer extends Document {
@@ -8,10 +8,13 @@ export class Customer extends Document {
   privateKey: string;
 
   @Prop({ unique: true })
-  id: string;
+  clientId: string;
 
   @Prop({ unique: true })
   address: string;
+
+  @Prop()
+  balance: string;
 
 }
 
