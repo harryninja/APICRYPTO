@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ICustomer } from './interfaces/customer.interface';
-import { CheckCustomerDto } from './dto';
 import { Customer } from './schemas/customer.schema';
+import { CreateCustomerDto } from './dto';
 
 @Injectable()
 export class CustomersService {
@@ -23,11 +23,23 @@ export class CustomersService {
     return customer;
   }
 
+  public async findAll(
+    clientId: string
+  ): Promise<Customer[]> {
+    return await this.customerModel
+      .find({ where: {clientId: clientId}})
+      .exec();
+  }
+
   public async create(
-    createCustomerDto: CheckCustomerDto,
+    createCustomerDto: CreateCustomerDto,
   ): Promise<ICustomer> {
-    const newCustomer = await this.customerModel.create(createCustomerDto);
-    return newCustomer;
+    try {
+      const newCustomer = await this.customerModel.create(createCustomerDto);
+      return newCustomer;
+    } catch (err) {
+      return err
+    }
   }
 
 }

@@ -16,8 +16,4 @@ export class CreateCustomerDto {
   @IsString()
   @IsOptional()
   privateKey: string;
-
-  @IsString()
-  @IsOptional()
-  balance: string;
 }

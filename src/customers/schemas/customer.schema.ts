@@ -13,9 +13,6 @@ export class Customer extends Document {
   @Prop({ unique: true })
   address: string;
 
-  @Prop()
-  balance: string;
-
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

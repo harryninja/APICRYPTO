@@ -8,13 +8,11 @@ import {
   NotFoundException,
   Param,
   Headers,
-  Logger,
-  UnauthorizedException,
-  ConflictException
+  UnauthorizedException
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
-import { CheckCustomerDto, CreateCustomerDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateCustomerDto } from './dto';
 const Web3 = require("web3")
 
 @ApiTags('customers')
@@ -25,13 +23,11 @@ export class CustomersController {
 
   auth = "666777888999"
 
-
-
   @Get('/:clientId')
   public async getCustomer(@Headers('auth') headers, @Res() res, @Param('clientId') clientId: string) {
 
     const web3Provider = new Web3.providers.HttpProvider(
-      "https://sepolia.infura.io/v3/f486c42d7656406bb5aba8ae8c068821"
+      "https://goerli.infura.io/v3/9f22cd893d9e4acaa44121707f895a87"
     )
     const web3 = new Web3(web3Provider)
 
@@ -57,7 +53,7 @@ export class CustomersController {
       },
     ];
 
-    const tokenContract = "0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa"
+    const tokenContract = "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6"
 
     const user = await this.customersService.findOne(clientId)
 
@@ -69,7 +65,7 @@ export class CustomersController {
       const result = await contract.methods.balanceOf(walletAddress).call();
       const formattedResult = web3.utils.fromWei(result, "ether");
       return formattedResult;
-  }
+    }
 
     if (!clientId) {
       throw new NotFoundException('User ID does not exist');
@@ -96,7 +92,7 @@ export class CustomersController {
     @Headers('auth') headers
   ) {
     const web3Provider = new Web3.providers.HttpProvider(
-      "https://sepolia.infura.io/v3/f486c42d7656406bb5aba8ae8c068821"
+      "https://goerli.infura.io/v3/9f22cd893d9e4acaa44121707f895a87"
     )
 
     const web3 = new Web3(web3Provider)
@@ -105,20 +101,13 @@ export class CustomersController {
 
     const { address, privateKey } = wallet
 
-    const compare = this.customersService.findOne(createCustomerDto.clientId)
-
     let data = {
       clientId: createCustomerDto.clientId,
       address: address,
       privateKey: privateKey,
-      balance: "0"
     }
 
     try {
-
-      if ((await compare).clientId === data.clientId) {
-        throw new ConflictException('This id already has a wallet')
-      }
 
       if (headers !== this.auth) {
         throw new UnauthorizedException('Unauthorized');
@@ -135,29 +124,35 @@ export class CustomersController {
       return res.status(HttpStatus.BAD_REQUEST).json({
         message: 'Error: Wallet not created',
         status: 400,
+        err
       });
     }
   }
 
-  @Post()
-  public async sendBackInfo(
-    @Res() res,
-    @Body() clientId,
-    @Headers('auth') headers
-  ) {
+  //tentativa de webhook
+  // @Post()
+  // public async sendBackInfo(
+  //   @Res() res,
+  //   @Param('userInfo') userInfo: Object,
+  //   @Headers('auth') headers
+  // ) {
 
-    try {
+  //   try {
 
-      if (headers !== this.auth) {
-        throw new UnauthorizedException('Unauthorized');
-      }
+  //     if (headers !== this.auth) {
+  //       throw new UnauthorizedException('Unauthorized');
+  //     }
 
-    } catch (err) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Error: Wallet not created',
-        status: 400,
-      });
-    }
+  //     return res.status(HttpStatus.OK).json({
+  //       message: 'Wallet was created',
+  //       status: 200,
+  //     });
+  //   } catch (err) {
+  //     return res.status(HttpStatus.BAD_REQUEST).json({
+  //       message: 'Error: Wallet not created',
+  //       status: 400,
+  //     });
+  //   }
 
-  }
+  // }
 }
