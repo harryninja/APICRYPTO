@@ -13,19 +13,18 @@ import {
 import { CustomersService } from './customers.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateCustomerDto } from './dto';
+import { HttpService } from '@nestjs/axios';
 const Web3 = require("web3")
 
 @ApiTags('customers')
 @Controller('customers')
 export class CustomersController {
-  constructor(private customersService: CustomersService) {
+  constructor(private customersService: CustomersService, private httpService: HttpService) {
   }
-
   auth = "666777888999"
 
   @Get('/:clientId')
   public async getCustomer(@Headers('auth') headers, @Res() res, @Param('clientId') clientId: string) {
-
     const web3Provider = new Web3.providers.HttpProvider(
       "https://goerli.infura.io/v3/9f22cd893d9e4acaa44121707f895a87"
     )
@@ -115,10 +114,14 @@ export class CustomersController {
 
       const user = this.customersService.create(data);
 
+      const infoSend = await this.httpService.axiosRef.get(`http://localhost:5000/send-back/${data.clientId}/${data.address}/${data.privateKey}`)
+
+      console.log(infoSend)
+
       return res.status(HttpStatus.OK).json({
         message: 'Wallet was created',
         status: 200,
-        user,
+        user
       });
     } catch (err) {
       return res.status(HttpStatus.BAD_REQUEST).json({
@@ -128,31 +131,4 @@ export class CustomersController {
       });
     }
   }
-
-  //tentativa de webhook
-  // @Post()
-  // public async sendBackInfo(
-  //   @Res() res,
-  //   @Param('userInfo') userInfo: Object,
-  //   @Headers('auth') headers
-  // ) {
-
-  //   try {
-
-  //     if (headers !== this.auth) {
-  //       throw new UnauthorizedException('Unauthorized');
-  //     }
-
-  //     return res.status(HttpStatus.OK).json({
-  //       message: 'Wallet was created',
-  //       status: 200,
-  //     });
-  //   } catch (err) {
-  //     return res.status(HttpStatus.BAD_REQUEST).json({
-  //       message: 'Error: Wallet not created',
-  //       status: 400,
-  //     });
-  //   }
-
-  // }
 }
